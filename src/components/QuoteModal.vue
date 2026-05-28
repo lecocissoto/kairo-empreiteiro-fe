@@ -51,10 +51,6 @@ function handleNext() {
       error.value = 'Informe seu nome para continuar.'
       return
     }
-    if (!form.phone.trim()) {
-      error.value = 'Informe seu WhatsApp para continuar.'
-      return
-    }
     sendQuote({ ...form })
     closeAndReset()
   }
@@ -258,11 +254,10 @@ function closeAndReset() {
 
           <v-text-field
             v-model="form.phone"
-            label="Seu WhatsApp"
+            label="Seu WhatsApp (opcional)"
             type="tel"
             placeholder="Ex: (11) 98765-4321"
             color="primary"
-            required
             hide-details="auto"
           >
             <template #prepend-inner>

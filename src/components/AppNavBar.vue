@@ -31,8 +31,9 @@ function scrollTo(href) {
 <template>
   <v-app-bar
     class="app-navbar"
-    :color="isScrolled ? 'primary' : 'transparent'"
+    :color="isScrolled ? 'primary' : undefined"
     :elevation="isScrolled ? 3 : 0"
+    :style="!isScrolled ? { background: 'linear-gradient(180deg, rgba(15,32,48,0.72) 0%, transparent 100%)' } : {}"
     height="68"
   >
     <v-container class="d-flex align-center pa-0" style="max-width: 1200px">
