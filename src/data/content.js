@@ -64,6 +64,7 @@ export default {
         title: 'Construção',
         description:
           'Obras do zero com estrutura sólida, materiais de qualidade e execução rigorosa. Residencial e comercial.',
+        rooms: ['Área total', 'Área do lote', 'Garagem', 'Quintal'],
       },
       {
         id: 'reforma',
@@ -71,6 +72,7 @@ export default {
         title: 'Reforma',
         description:
           'Revitalização completa de ambientes. Banheiros, cozinhas, áreas de serviço e reforma total do imóvel.',
+        rooms: ['Cozinha', 'Banheiro', 'Sala', 'Quarto', 'Lavabo', 'Área de Serviço', 'Corredor'],
       },
       {
         id: 'piso',
@@ -78,6 +80,7 @@ export default {
         title: 'Piso e Revestimento',
         description:
           'Porcelanato, cerâmica, vinílico e madeira. Assentamento preciso, rejunte perfeito e entrega impecável.',
+        rooms: ['Sala', 'Quarto', 'Corredor', 'Cozinha', 'Banheiro', 'Varanda'],
       },
       {
         id: 'eletrica',
@@ -85,6 +88,7 @@ export default {
         title: 'Elétrica',
         description:
           'Instalações e reparos elétricos com segurança e conformidade técnica. Residencial e comercial.',
+        rooms: ['Área total', 'Cozinha', 'Quarto', 'Sala', 'Área de Serviço'],
       },
       {
         id: 'hidraulica',
@@ -92,6 +96,7 @@ export default {
         title: 'Hidráulica',
         description:
           "Encanamento, instalação de banheiros, cozinhas, caixas d'água e reparos em geral.",
+        rooms: ['Banheiro', 'Cozinha', 'Lavanderia', 'Área de Serviço'],
       },
       {
         id: 'drywall',
@@ -99,6 +104,7 @@ export default {
         title: 'Dry Wall',
         description:
           'Divisórias e forros em drywall — rapidez na execução, acabamento profissional e isolamento acústico.',
+        rooms: ['Sala', 'Quarto', 'Escritório', 'Corredor'],
       },
     ],
   },
@@ -263,17 +269,29 @@ export default {
       { id: 'hidraulica', label: 'Hidráulica' },
       { id: 'drywall', label: 'Dry Wall' },
     ],
+    allRooms: [
+      'Sala', 'Quarto', 'Banheiro', 'Cozinha', 'Corredor', 'Lavabo',
+      'Área de Serviço', 'Lavanderia', 'Varanda', 'Garagem',
+      'Escritório', 'Área total', 'Área do lote', 'Quintal',
+    ],
     buildMessage(data) {
       const services = data.services.length > 0 ? data.services.join(', ') : 'Não informado'
-      const sqm = data.sqm ? `${data.sqm} m²` : 'Não informado'
       const desc = data.description || 'Não informado'
+
+      let areaText = 'Não informado'
+      if (data.rooms && data.rooms.length > 0) {
+        const lines = data.rooms.map(r => `  • ${r.name}${r.sqm ? `: ${r.sqm}m²` : ''}`)
+        const total = data.rooms.reduce((s, r) => s + (parseFloat(r.sqm) || 0), 0)
+        areaText = lines.join('\n') + (total > 0 ? `\n  *Total aprox.: ${total}m²*` : '')
+      }
+
       return (
         `Olá Kairo! Vim pelo site e gostaria de solicitar um orçamento. 🏗️\n\n` +
         `*Serviços desejados:* ${services}\n` +
-        `*Área aproximada:* ${sqm}\n` +
+        `*Cômodos/Áreas:*\n${areaText}\n` +
         `*Detalhes:* ${desc}\n\n` +
         `*Nome:* ${data.name}\n` +
-        `*Telefone:* ${data.phone}`
+        `*Telefone:* ${data.phone || 'Não informado'}`
       )
     },
   },

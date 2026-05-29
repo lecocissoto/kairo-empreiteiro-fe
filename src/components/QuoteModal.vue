@@ -6,18 +6,70 @@ import { useWhatsApp } from '../composables/useWhatsApp.js'
 const props = defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue'])
 
-const { quote } = content
+const { quote, services } = content
 const { sendQuote } = useWhatsApp()
 
 const step = ref(1)
 const error = ref('')
+const customRoomInput = ref('')
+const showCustomInput = ref(false)
+
 const form = reactive({
   services: [],
-  sqm: '',
+  rooms: [],
   description: '',
   name: '',
   phone: '',
 })
+
+// Deduplicated room suggestions based on selected services
+const suggestedRooms = computed(() => {
+  const seen = new Set()
+  const result = []
+  for (const id of form.services) {
+    const svc = services.items.find(s => s.id === id)
+    if (svc?.rooms) {
+      for (const r of svc.rooms) {
+        if (!seen.has(r)) {
+          seen.add(r)
+          result.push(r)
+        }
+      }
+    }
+  }
+  return result
+})
+
+// Rooms from allRooms not yet added to the list
+const availableRooms = computed(() => {
+  const added = new Set(form.rooms.map(r => r.name))
+  return quote.allRooms.filter(r => !added.has(r))
+})
+
+// Auto-calculated total m²
+const totalSqm = computed(() => {
+  const t = form.rooms.reduce((s, r) => s + (parseFloat(r.sqm) || 0), 0)
+  return t > 0 ? t : null
+})
+
+function addRoom(name) {
+  if (!form.rooms.find(r => r.name === name)) {
+    form.rooms.push({ name, sqm: '' })
+  }
+}
+
+function removeRoom(index) {
+  form.rooms.splice(index, 1)
+}
+
+function addCustomRoom() {
+  const name = customRoomInput.value.trim()
+  if (name && !form.rooms.find(r => r.name === name)) {
+    form.rooms.push({ name, sqm: '' })
+  }
+  customRoomInput.value = ''
+  showCustomInput.value = false
+}
 
 const stepTitle = computed(() => quote.stepTitles[step.value - 1])
 const stepSubtitle = computed(() => quote.stepSubtitles[step.value - 1])
@@ -39,6 +91,12 @@ function handleNext() {
       error.value = 'Selecione ao menos um serviço para continuar.'
       return
     }
+    // Pre-populate rooms from suggestions (only if list is empty)
+    if (form.rooms.length === 0) {
+      for (const name of suggestedRooms.value) {
+        form.rooms.push({ name, sqm: '' })
+      }
+    }
     step.value = 2
     return
   }
@@ -51,7 +109,7 @@ function handleNext() {
       error.value = 'Informe seu nome para continuar.'
       return
     }
-    sendQuote({ ...form })
+    sendQuote({ ...form, rooms: form.rooms.filter(r => r.name) })
     closeAndReset()
   }
 }
@@ -68,9 +126,11 @@ function closeAndReset() {
   setTimeout(() => {
     step.value = 1
     error.value = ''
+    customRoomInput.value = ''
+    showCustomInput.value = false
     Object.assign(form, {
       services: [],
-      sqm: '',
+      rooms: [],
       description: '',
       name: '',
       phone: '',
@@ -147,14 +207,7 @@ function closeAndReset() {
         </div>
 
         <!-- Step labels -->
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 6px;
-            padding: 0 2px;
-          "
-        >
+        <div style="display: flex; justify-content: space-between; margin-top: 6px; padding: 0 2px">
           <span
             v-for="(label, i) in quote.stepLabels"
             :key="i"
@@ -175,15 +228,7 @@ function closeAndReset() {
       <!-- Content -->
       <v-card-text style="padding: 20px 24px">
         <div class="mb-4">
-          <h3
-            style="
-              font-family: Montserrat, sans-serif;
-              font-weight: 700;
-              font-size: 1rem;
-              color: #1E3A47;
-              margin-bottom: 4px;
-            "
-          >
+          <h3 style="font-family: Montserrat, sans-serif; font-weight: 700; font-size: 1rem; color: #1E3A47; margin-bottom: 4px">
             {{ stepTitle }}
           </h3>
           <p style="color: #6B7280; font-size: 0.85rem; margin: 0">{{ stepSubtitle }}</p>
@@ -204,36 +249,122 @@ function closeAndReset() {
                 color="primary"
                 density="comfortable"
                 hide-details
-                style="font-size: 0.9rem"
               />
             </v-col>
           </v-row>
         </div>
 
-        <!-- Step 2: Details -->
-        <div v-else-if="step === 2" class="d-flex flex-column" style="gap: 16px">
-          <v-text-field
-            v-model="form.sqm"
-            label="Área aproximada (m²)"
-            type="number"
-            min="1"
-            prefix="m²"
-            placeholder="Ex: 50"
-            color="primary"
-            hide-details="auto"
-          >
-            <template #prepend-inner>
-              <v-icon size="18" color="primary">mdi-ruler-square</v-icon>
-            </template>
-          </v-text-field>
+        <!-- Step 2: Rooms -->
+        <div v-else-if="step === 2">
 
+          <!-- Added rooms list -->
+          <div v-if="form.rooms.length > 0" class="room-list mb-3">
+            <div
+              v-for="(room, i) in form.rooms"
+              :key="i"
+              class="room-row"
+            >
+              <span class="room-name">{{ room.name }}</span>
+              <div class="room-sqm-wrap">
+                <input
+                  v-model="room.sqm"
+                  type="number"
+                  min="1"
+                  placeholder="m²"
+                  class="room-sqm-input"
+                />
+                <span class="room-sqm-unit">m²</span>
+              </div>
+              <button class="room-remove-btn" @click="removeRoom(i)" aria-label="Remover">
+                <v-icon size="16" color="grey">mdi-close</v-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Total summary -->
+          <div
+            v-if="totalSqm"
+            class="room-total"
+          >
+            <v-icon size="15" color="secondary" class="mr-1">mdi-ruler-square</v-icon>
+            Área total aprox.: <strong>{{ totalSqm }}m²</strong>
+          </div>
+
+          <!-- Available room chips -->
+          <div v-if="availableRooms.length > 0 || !showCustomInput" class="mt-3">
+            <p style="font-size: 0.78rem; color: #9CA3AF; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px">
+              Adicionar cômodo
+            </p>
+            <div class="room-chips">
+              <button
+                v-for="name in availableRooms"
+                :key="name"
+                class="room-chip"
+                @click="addRoom(name)"
+              >
+                <v-icon size="13" class="mr-1">mdi-plus</v-icon>
+                {{ name }}
+              </button>
+              <button
+                v-if="!showCustomInput"
+                class="room-chip room-chip--custom"
+                @click="showCustomInput = true"
+              >
+                <v-icon size="13" class="mr-1">mdi-pencil-outline</v-icon>
+                Personalizado...
+              </button>
+            </div>
+          </div>
+
+          <!-- Custom room input -->
+          <div v-if="showCustomInput" class="mt-3 d-flex align-center" style="gap: 8px">
+            <v-text-field
+              v-model="customRoomInput"
+              label="Nome do cômodo"
+              placeholder="Ex: Varanda gourmet"
+              density="compact"
+              variant="outlined"
+              color="primary"
+              hide-details
+              autofocus
+              style="flex: 1"
+              @keyup.enter="addCustomRoom"
+            />
+            <v-btn color="primary" size="small" icon @click="addCustomRoom">
+              <v-icon size="18">mdi-check</v-icon>
+            </v-btn>
+            <v-btn variant="text" size="small" icon @click="showCustomInput = false; customRoomInput = ''">
+              <v-icon size="18" color="grey">mdi-close</v-icon>
+            </v-btn>
+          </div>
+
+          <!-- Empty state -->
+          <div
+            v-if="form.rooms.length === 0"
+            style="
+              background: #F9FAFB;
+              border: 1px dashed #D1D5DB;
+              border-radius: 10px;
+              padding: 16px;
+              text-align: center;
+              color: #9CA3AF;
+              font-size: 0.85rem;
+              margin-bottom: 12px;
+            "
+          >
+            <v-icon size="24" color="grey-lighten-1" class="mb-1">mdi-home-outline</v-icon>
+            <p style="margin: 0">Nenhum cômodo adicionado. Use os chips acima para adicionar.</p>
+          </div>
+
+          <!-- Description -->
           <v-textarea
             v-model="form.description"
-            label="Descreva o projeto"
-            :placeholder="'Ex: Reforma completa de apartamento de 60m², incluindo banheiro, cozinha e dois quartos...'"
-            rows="4"
+            label="Detalhes adicionais (opcional)"
+            placeholder="Ex: Reforma completa de apartamento, incluindo troca de piso e pintura..."
+            rows="3"
             color="primary"
             hide-details="auto"
+            class="mt-4"
           />
         </div>
 
@@ -283,7 +414,7 @@ function closeAndReset() {
           </div>
         </div>
 
-        <!-- Error message -->
+        <!-- Error -->
         <v-alert
           v-if="error"
           type="error"
