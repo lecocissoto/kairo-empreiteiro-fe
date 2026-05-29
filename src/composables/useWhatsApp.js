@@ -17,14 +17,16 @@ export function useWhatsApp() {
   }
 
   function sendQuote(formData) {
-    const serviceLabels = formData.services.map(id => {
+    const labelFor = id => {
       const opt = content.quote.serviceOptions.find(o => o.id === id)
       return opt ? opt.label : id
-    })
-    const message = content.quote.buildMessage({
-      ...formData,
-      services: serviceLabels,
-    })
+    }
+    const serviceLabels = formData.services.map(labelFor)
+    const rooms = (formData.rooms || []).map(r => ({
+      ...r,
+      services: (r.services || []).map(labelFor),
+    }))
+    const message = content.quote.buildMessage({ ...formData, services: serviceLabels, rooms })
     window.open(buildUrl(message), '_blank', 'noopener,noreferrer')
   }
 

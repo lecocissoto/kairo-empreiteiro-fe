@@ -500,11 +500,41 @@ h1, h2, h3, h4, h5 {
 
 /* Quote modal steps indicator */
 .step-indicator {
+  position: relative;
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.step-track {
+  position: absolute;
+  top: 17px;
+  left: 17px;
+  right: 17px;
+  height: 2px;
+  background: #E5E7EB;
+  z-index: 0;
+}
+
+.step-track-fill {
+  height: 100%;
+  background: var(--color-secondary);
+  transition: width 0.4s ease;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  margin-bottom: 24px;
+  gap: 6px;
+  z-index: 1;
+}
+
+.step-item-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: color 0.3s;
 }
 
 .step-dot {
@@ -535,21 +565,6 @@ h1, h2, h3, h4, h5 {
   color: #9CA3AF;
 }
 
-.step-line {
-  flex: 1;
-  max-width: 60px;
-  height: 2px;
-  transition: background 0.3s ease;
-}
-
-.step-line.done {
-  background: var(--color-secondary);
-}
-
-.step-line.pending {
-  background: #E5E7EB;
-}
-
 /* Navbar */
 .app-navbar {
   transition: background-color 0.35s ease, box-shadow 0.35s ease !important;
@@ -573,8 +588,8 @@ h1, h2, h3, h4, h5 {
 
 .room-row {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
   background: #F9FAFB;
   border: 1px solid #E5E7EB;
   border-radius: 10px;
@@ -586,14 +601,41 @@ h1, h2, h3, h4, h5 {
   border-color: var(--color-primary);
 }
 
+.room-row-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .room-name {
   flex: 1;
   font-size: 0.9rem;
   font-weight: 600;
   color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.room-service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.room-svc-tag {
+  border-radius: 12px;
+  padding: 2px 9px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid #D1D5DB;
+  color: #9CA3AF;
+  background: white;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.room-svc-tag.active {
+  background: rgba(30, 58, 71, 0.08);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .room-sqm-wrap {

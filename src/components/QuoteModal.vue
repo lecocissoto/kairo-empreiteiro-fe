@@ -54,7 +54,7 @@ const totalSqm = computed(() => {
 
 function addRoom(name) {
   if (!form.rooms.find(r => r.name === name)) {
-    form.rooms.push({ name, sqm: '' })
+    form.rooms.push({ name, sqm: '', services: [...form.services] })
   }
 }
 
@@ -65,7 +65,7 @@ function removeRoom(index) {
 function addCustomRoom() {
   const name = customRoomInput.value.trim()
   if (name && !form.rooms.find(r => r.name === name)) {
-    form.rooms.push({ name, sqm: '' })
+    form.rooms.push({ name, sqm: '', services: [...form.services] })
   }
   customRoomInput.value = ''
   showCustomInput.value = false
@@ -73,6 +73,7 @@ function addCustomRoom() {
 
 const stepTitle = computed(() => quote.stepTitles[step.value - 1])
 const stepSubtitle = computed(() => quote.stepSubtitles[step.value - 1])
+const trackFillWidth = computed(() => `${(step.value - 1) * 50}%`)
 
 function getStepClass(n) {
   if (step.value > n) return 'done'
@@ -80,8 +81,15 @@ function getStepClass(n) {
   return 'pending'
 }
 
-function getLineClass(n) {
-  return step.value > n ? 'done' : 'pending'
+function getServiceLabel(id) {
+  return quote.serviceOptions.find(o => o.id === id)?.label ?? id
+}
+
+function toggleRoomService(roomIndex, serviceId) {
+  const room = form.rooms[roomIndex]
+  const idx = room.services.indexOf(serviceId)
+  if (idx === -1) room.services.push(serviceId)
+  else room.services.splice(idx, 1)
 }
 
 function handleNext() {
@@ -94,7 +102,7 @@ function handleNext() {
     // Pre-populate rooms from suggestions (only if list is empty)
     if (form.rooms.length === 0) {
       for (const name of suggestedRooms.value) {
-        form.rooms.push({ name, sqm: '' })
+        form.rooms.push({ name, sqm: '', services: [...form.services] })
       }
     }
     step.value = 2
@@ -188,40 +196,19 @@ function closeAndReset() {
       <!-- Step indicator -->
       <div style="padding: 20px 24px 0">
         <div class="step-indicator">
-          <div
-            v-for="n in 3"
-            :key="n"
-            class="d-flex align-center"
-            :style="n < 3 ? 'flex: 1' : ''"
-          >
+          <div class="step-track">
+            <div class="step-track-fill" :style="{ width: trackFillWidth }" />
+          </div>
+          <div v-for="n in 3" :key="n" class="step-item">
             <div :class="['step-dot', getStepClass(n)]">
               <v-icon v-if="step > n" size="14">mdi-check</v-icon>
               <span v-else>{{ n }}</span>
             </div>
-            <div
-              v-if="n < 3"
-              :class="['step-line', getLineClass(n)]"
-              style="flex: 1"
-            />
+            <span
+              class="step-item-label"
+              :style="{ color: step === n ? '#1E3A47' : '#9CA3AF' }"
+            >{{ quote.stepLabels[n - 1] }}</span>
           </div>
-        </div>
-
-        <!-- Step labels -->
-        <div style="display: flex; justify-content: space-between; margin-top: 6px; padding: 0 2px">
-          <span
-            v-for="(label, i) in quote.stepLabels"
-            :key="i"
-            :style="{
-              fontSize: '0.72rem',
-              fontWeight: 600,
-              color: step === i + 1 ? '#1E3A47' : '#9CA3AF',
-              transition: 'color 0.3s',
-              flex: i === 1 ? '1' : 'none',
-              textAlign: i === 1 ? 'center' : i === 2 ? 'right' : 'left',
-            }"
-          >
-            {{ label }}
-          </span>
         </div>
       </div>
 
@@ -264,20 +251,32 @@ function closeAndReset() {
               :key="i"
               class="room-row"
             >
-              <span class="room-name">{{ room.name }}</span>
-              <div class="room-sqm-wrap">
-                <input
-                  v-model="room.sqm"
-                  type="number"
-                  min="1"
-                  placeholder="m²"
-                  class="room-sqm-input"
-                />
-                <span class="room-sqm-unit">m²</span>
+              <div class="room-row-header">
+                <span class="room-name">{{ room.name }}</span>
+                <div class="room-sqm-wrap">
+                  <input
+                    v-model="room.sqm"
+                    type="number"
+                    min="1"
+                    placeholder="m²"
+                    class="room-sqm-input"
+                  />
+                  <span class="room-sqm-unit">m²</span>
+                </div>
+                <button class="room-remove-btn" @click="removeRoom(i)" aria-label="Remover">
+                  <v-icon size="16" color="grey">mdi-close</v-icon>
+                </button>
               </div>
-              <button class="room-remove-btn" @click="removeRoom(i)" aria-label="Remover">
-                <v-icon size="16" color="grey">mdi-close</v-icon>
-              </button>
+              <div v-if="form.services.length > 0" class="room-service-tags">
+                <button
+                  v-for="svcId in form.services"
+                  :key="svcId"
+                  :class="['room-svc-tag', room.services.includes(svcId) ? 'active' : '']"
+                  @click="toggleRoomService(i, svcId)"
+                >
+                  {{ getServiceLabel(svcId) }}
+                </button>
+              </div>
             </div>
           </div>
 

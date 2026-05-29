@@ -36,7 +36,7 @@ function scrollTo(href) {
     :style="!isScrolled ? { background: 'linear-gradient(180deg, rgba(15,32,48,0.72) 0%, transparent 100%)' } : {}"
     height="68"
   >
-    <v-container class="d-flex align-center pa-0" style="max-width: 1200px">
+    <v-container class="d-flex align-center px-4 px-md-0" style="max-width: 1200px">
       <!-- Logo -->
       <a href="#" class="text-decoration-none d-flex align-center" style="gap: 4px">
         <span class="footer-logo-text" style="font-size: 1.35rem">

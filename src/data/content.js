@@ -280,7 +280,11 @@ export default {
 
       let areaText = 'Não informado'
       if (data.rooms && data.rooms.length > 0) {
-        const lines = data.rooms.map(r => `  • ${r.name}${r.sqm ? `: ${r.sqm}m²` : ''}`)
+        const lines = data.rooms.map(r => {
+          const sqmPart = r.sqm ? ` (${r.sqm}m²)` : ''
+          const svcPart = r.services && r.services.length > 0 ? ` — ${r.services.join(', ')}` : ''
+          return `  • ${r.name}${sqmPart}${svcPart}`
+        })
         const total = data.rooms.reduce((s, r) => s + (parseFloat(r.sqm) || 0), 0)
         areaText = lines.join('\n') + (total > 0 ? `\n  *Total aprox.: ${total}m²*` : '')
       }
