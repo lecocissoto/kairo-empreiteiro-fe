@@ -6,7 +6,7 @@ import { useWhatsApp } from '../composables/useWhatsApp.js'
 const props = defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue'])
 
-const { quote, services } = content
+const { quote } = content
 const { sendQuote } = useWhatsApp()
 
 const step = ref(1)
@@ -20,24 +20,6 @@ const form = reactive({
   description: '',
   name: '',
   phone: '',
-})
-
-// Deduplicated room suggestions based on selected services
-const suggestedRooms = computed(() => {
-  const seen = new Set()
-  const result = []
-  for (const id of form.services) {
-    const svc = services.items.find(s => s.id === id)
-    if (svc?.rooms) {
-      for (const r of svc.rooms) {
-        if (!seen.has(r)) {
-          seen.add(r)
-          result.push(r)
-        }
-      }
-    }
-  }
-  return result
 })
 
 // Rooms from allRooms not yet added to the list
@@ -98,12 +80,6 @@ function handleNext() {
     if (form.services.length === 0) {
       error.value = 'Selecione ao menos um serviço para continuar.'
       return
-    }
-    // Pre-populate rooms from suggestions (only if list is empty)
-    if (form.rooms.length === 0) {
-      for (const name of suggestedRooms.value) {
-        form.rooms.push({ name, sqm: '', services: [...form.services] })
-      }
     }
     step.value = 2
     return
