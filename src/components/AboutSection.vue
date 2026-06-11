@@ -66,6 +66,24 @@ const { about } = content
           </div>
         </v-col>
       </v-row>
+
+      <!-- Momentos: polaroids dele dentro e fora da obra -->
+      <div class="about-moments" data-aos="fade-up">
+        <span class="about-moments-title">{{ about.momentsTitle }}</span>
+        <div class="about-moments-row">
+          <figure
+            v-for="(moment, i) in about.moments"
+            :key="moment.src"
+            class="about-polaroid"
+            :style="{ '--rotate': moment.rotate + 'deg' }"
+            data-aos="zoom-in"
+            :data-aos-delay="100 + i * 100"
+          >
+            <img :src="moment.src" :alt="moment.caption" loading="lazy" />
+            <figcaption>{{ moment.caption }}</figcaption>
+          </figure>
+        </div>
+      </div>
     </v-container>
   </section>
 </template>

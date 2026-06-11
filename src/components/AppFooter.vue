@@ -101,7 +101,7 @@ function handleLink(link) {
           {{ footer.copyright }}
         </p>
         <p style="color: rgba(255,255,255,0.3); font-size: 0.75rem; margin: 0">
-          São Paulo e Grande SP
+          {{ brand.areaAtendimento }}
         </p>
       </div>
     </v-container>

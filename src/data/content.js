@@ -1,3 +1,5 @@
+import galleryManifest from './galleryManifest.json'
+
 export default {
   brand: {
     name: 'Kairo Empreiteiro',
@@ -6,7 +8,7 @@ export default {
     email: 'contato@kairoempreiteiro.com.br',
     address: 'São Paulo, SP',
     instagram: '',
-    areaAtendimento: 'São Paulo Capital e Grande SP',
+    areaAtendimento: 'São Paulo, Porto Alegre e João Pessoa',
   },
 
   nav: {
@@ -21,36 +23,43 @@ export default {
   },
 
   hero: {
+    badge: 'SÃO PAULO · PORTO ALEGRE · JOÃO PESSOA',
     headline: 'Construção e Reforma',
     headlineAccent: 'com Qualidade Real',
     subheadline:
-      'Mais de 10 anos transformando espaços em São Paulo. Do projeto à entrega, comprometidos com prazo, qualidade e transparência.',
+      'Mais de 10 anos transformando espaços em São Paulo, Porto Alegre e João Pessoa. Do projeto à entrega, comprometidos com prazo, qualidade e transparência.',
     ctaPrimary: { label: 'Solicitar Orçamento Grátis', action: 'openQuote' },
     ctaSecondary: { label: 'Ver Portfólio', href: '#galeria' },
-    backgroundImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80',
-    backgroundImageFallback: 'https://picsum.photos/seed/kairo-construction/1920/1080',
+    backgroundImage: '/portfolio/drywall-pintura/full/drywall-pintura5.webp',
   },
 
   stats: [
     { value: '10+', label: 'Anos de Experiência' },
     { value: '200+', label: 'Obras Entregues' },
     { value: '98%', label: 'Clientes Satisfeitos' },
-    { value: 'SP', label: 'Grande São Paulo' },
+    { value: '3', label: 'Cidades Atendidas' },
   ],
 
   about: {
     sectionTitle: 'Quem é Kairo?',
-    photo: 'https://picsum.photos/seed/kairo-pro/400/500',
+    photo: '/profile/principal.webp',
     photoAlt: 'Kairo — Empreiteiro profissional em São Paulo',
     paragraphs: [
       'Kairo começou nas obras aos 16 anos como ajudante, aprendendo cada detalhe do ofício com profissionais experientes. Depois de mais de uma década no setor, fundou sua própria empreiteira com uma missão clara: entregar qualidade real, sem enrolação.',
-      'Hoje lidera uma equipe especializada que atende clientes residenciais e comerciais em toda a Grande São Paulo, com foco em pontualidade, comunicação transparente e acabamento impecável. Cada obra é tratada como se fosse a própria casa.',
+      'Hoje lidera uma equipe especializada que atende clientes residenciais e comerciais em São Paulo, Porto Alegre e João Pessoa, com foco em pontualidade, comunicação transparente e acabamento impecável. Cada obra é tratada como se fosse a própria casa.',
     ],
     highlights: [
       { icon: 'mdi-calendar-check', text: 'Prazo sempre respeitado' },
       { icon: 'mdi-shield-check', text: 'Garantia em todos os serviços' },
       { icon: 'mdi-message-text-outline', text: 'Comunicação direta e transparente' },
-      { icon: 'mdi-map-marker-radius', text: 'Atende São Paulo e Grande SP' },
+      { icon: 'mdi-map-marker-radius', text: 'Atende São Paulo, Porto Alegre e João Pessoa' },
+    ],
+    momentsTitle: 'Dentro e fora da obra',
+    moments: [
+      { src: '/profile/profissional1.webp', caption: 'Mão na massa', rotate: -3 },
+      { src: '/profile/casual1.webp', caption: 'Paixão por cavalos', rotate: 2 },
+      { src: '/profile/profissional2.webp', caption: 'Vestindo a camisa', rotate: -2 },
+      { src: '/profile/casual2.webp', caption: 'Fora do canteiro', rotate: 3 },
     ],
   },
 
@@ -147,66 +156,21 @@ export default {
   gallery: {
     sectionTitle: 'Galeria de Obras',
     sectionSubtitle: 'Resultados reais de projetos entregues. Cada foto conta uma história de qualidade.',
+    // Abas espelham as pastas de fotos-originais/ (geradas por npm run fotos)
     categories: [
-      {
-        id: 'reforma',
-        label: 'Reforma',
-        photos: [
-          { src: 'https://picsum.photos/seed/reform01/800/600', alt: 'Reforma de apartamento' },
-          { src: 'https://picsum.photos/seed/reform02/800/600', alt: 'Reforma de cozinha' },
-          { src: 'https://picsum.photos/seed/reform03/800/600', alt: 'Reforma de banheiro' },
-          { src: 'https://picsum.photos/seed/reform04/800/600', alt: 'Reforma sala de estar' },
-          { src: 'https://picsum.photos/seed/reform05/800/600', alt: 'Reforma área de serviço' },
-        ],
-      },
-      {
-        id: 'construcao',
-        label: 'Construção',
-        photos: [
-          { src: 'https://picsum.photos/seed/const01/800/600', alt: 'Construção residencial' },
-          { src: 'https://picsum.photos/seed/const02/800/600', alt: 'Estrutura em andamento' },
-          { src: 'https://picsum.photos/seed/const03/800/600', alt: 'Acabamento externo' },
-          { src: 'https://picsum.photos/seed/const04/800/600', alt: 'Obra comercial' },
-        ],
-      },
-      {
-        id: 'piso',
-        label: 'Piso',
-        photos: [
-          { src: 'https://picsum.photos/seed/piso01/800/600', alt: 'Porcelanato assentado' },
-          { src: 'https://picsum.photos/seed/piso02/800/600', alt: 'Piso vinílico instalado' },
-          { src: 'https://picsum.photos/seed/piso03/800/600', alt: 'Revestimento cerâmico' },
-          { src: 'https://picsum.photos/seed/piso04/800/600', alt: 'Piso de madeira' },
-        ],
-      },
-      {
-        id: 'drywall',
-        label: 'Dry Wall',
-        photos: [
-          { src: 'https://picsum.photos/seed/dry01/800/600', alt: 'Divisória drywall' },
-          { src: 'https://picsum.photos/seed/dry02/800/600', alt: 'Forro drywall' },
-          { src: 'https://picsum.photos/seed/dry03/800/600', alt: 'Parede drywall escritório' },
-        ],
-      },
-      {
-        id: 'eletrica',
-        label: 'Elétrica',
-        photos: [
-          { src: 'https://picsum.photos/seed/elet01/800/600', alt: 'Instalação elétrica' },
-          { src: 'https://picsum.photos/seed/elet02/800/600', alt: 'Painel elétrico' },
-          { src: 'https://picsum.photos/seed/elet03/800/600', alt: 'Fiação residencial' },
-        ],
-      },
-      {
-        id: 'hidraulica',
-        label: 'Hidráulica',
-        photos: [
-          { src: 'https://picsum.photos/seed/hidr01/800/600', alt: 'Instalação hidráulica' },
-          { src: 'https://picsum.photos/seed/hidr02/800/600', alt: 'Tubulação nova' },
-          { src: 'https://picsum.photos/seed/hidr03/800/600', alt: 'Banheiro hidráulica' },
-        ],
-      },
-    ],
+      { id: 'construcao', label: 'Construção' },
+      { id: 'drywall-pintura', label: 'Drywall e Pintura' },
+      { id: 'piso-e-revestimento', label: 'Piso e Revestimento' },
+      { id: 'pisos-azulejos', label: 'Pisos e Azulejos' },
+      { id: 'eletrica', label: 'Elétrica' },
+    ].map(({ id, label }) => ({
+      id,
+      label,
+      photos: (galleryManifest[id] || []).map((photo, i) => ({
+        ...photo,
+        alt: `${label} — foto ${i + 1}`,
+      })),
+    })),
   },
 
   testimonials: {

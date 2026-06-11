@@ -15,7 +15,7 @@ function scrollToGallery() {
   <section
     class="hero-section"
     :style="{
-      backgroundImage: `url('${hero.backgroundImage}'), url('${hero.backgroundImageFallback}')`,
+      backgroundImage: `url('${hero.backgroundImage}')`,
     }"
     id="inicio"
   >
@@ -33,7 +33,7 @@ function scrollToGallery() {
               style="letter-spacing: 1px; font-size: 0.7rem"
             >
               <v-icon start size="14">mdi-map-marker</v-icon>
-              SÃO PAULO E GRANDE SP
+              {{ hero.badge }}
             </v-chip>
           </div>
 

@@ -37,7 +37,7 @@ function scrollRight(index) {
 
 function openLightbox(catIndex, chunkIndex, itemIndex) {
   lightboxImgs.value = gallery.categories[catIndex].photos.map(p => ({
-    src: p.src,
+    src: p.full,
     title: p.alt,
   }))
   lightboxIndex.value = chunkIndex * 2 + itemIndex
@@ -103,11 +103,11 @@ function openLightbox(catIndex, chunkIndex, itemIndex) {
             >
               <div
                 v-for="(photo, itemIndex) in chunk"
-                :key="photo.src"
+                :key="photo.thumb"
                 class="gallery-item"
                 @click="openLightbox(catIndex, chunkIndex, itemIndex)"
               >
-                <img :src="photo.src" :alt="photo.alt" loading="lazy" />
+                <img :src="photo.thumb" :alt="photo.alt" loading="lazy" />
                 <div class="gallery-item-overlay">
                   <v-icon class="gallery-zoom-icon" size="32">mdi-magnify-plus-outline</v-icon>
                 </div>
